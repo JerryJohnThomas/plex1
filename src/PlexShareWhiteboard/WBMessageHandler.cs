@@ -57,6 +57,11 @@ namespace PlexShareWhiteboard
                             break;
                         case Operation.Creation:
 
+                            Debug.WriteLine(" shape received is it ?? " + shapeItems.Count);
+                            Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry);
+                            Debug.WriteLine(" shape received is it ?? " + shapeItems[0].GeometryString);
+                            Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry.GetType().Name);
+
                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
                             Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
 
@@ -127,6 +132,12 @@ namespace PlexShareWhiteboard
                             DisplayMessage(deserializedShape.UserID, deserializedShape.SnapshotNumber); //message that board number is saved
                             break;
                         case Operation.Creation:
+
+                            Debug.WriteLine(" shape received is it ?? " + shapeItems.Count);
+                            Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry);
+                            Debug.WriteLine(" shape received is it ?? " + shapeItems[0].GeometryString);
+                            Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry.GetType().Name);
+
                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
                             Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
                             //Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));

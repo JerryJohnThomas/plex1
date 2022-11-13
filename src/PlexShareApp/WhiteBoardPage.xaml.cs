@@ -34,7 +34,7 @@ namespace PlexShareApp
             //viewModel = new WhiteBoardViewModel();
             viewModel = WhiteBoardViewModel.Instance;
             // Subscribed to the Property Changed Event
-            viewModel.PropertyChanged += Listener;
+            //viewModel.PropertyChanged += Listener;
 
             //viewModel.ShapeItems = new AsyncObservableCollection<ShapeItem>();
             viewModel.ShapeItems = new ObservableCollection<ShapeItem>();
@@ -42,17 +42,17 @@ namespace PlexShareApp
             this.currentTool = "Select";
         }
 
-        private void Listener(object sender, PropertyChangedEventArgs e)
-        {
-            var propertyName = e.PropertyName; ;
-            var viewModel = DataContext as WhiteBoardViewModel;
+        //private void Listener(object sender, PropertyChangedEventArgs e)
+        //{
+        //    var propertyName = e.PropertyName;
+        //    var viewModel = DataContext as WhiteBoardViewModel;
 
-            if (propertyName == "sugu1")
-            {
-                viewModel.ShapeItems.Add(viewModel.sugu);
+        //    if (propertyName == "sugu1")
+        //    {
+        //        viewModel.ShapeItems.Add(viewModel.sugu);
 
-            }
-        }
+        //    }
+        //}
         private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
             var a = e.GetPosition(sender as Canvas);

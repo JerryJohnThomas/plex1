@@ -57,7 +57,7 @@ namespace PlexShareWhiteboard
                             break;
                         case Operation.Creation:
 
-                            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear());
+                            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
 
                             //_ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                             //      DispatcherPriority.Normal,

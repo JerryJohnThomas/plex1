@@ -188,13 +188,29 @@ namespace PlexShareWhiteboard
 
                                              //sugu
 
-
-
-                                             // rupesh
-                                             Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                                             sugu = new ShapeItem
                                              {
-                                                 ShapeItems.Add(shapeItems[0]);
-                                             });
+                                                 Geometry = shapeItems[0].Geometry.Clone(),
+                                                 GeometryString = shapeItems[0].GeometryString,
+                                                 Start = shapeItems[0].Start,
+                                                 End = shapeItems[0].End,
+                                                 Fill = shapeItems[0].Fill,
+                                                 Stroke = shapeItems[0].Stroke,
+                                                 ZIndex = shapeItems[0].ZIndex,
+                                                 AnchorPoint = shapeItems[0].AnchorPoint,
+                                                 Id = shapeItems[0].Id,
+                                                 StrokeThickness = shapeItems[0].StrokeThickness,
+                                             };
+                                             //2. store it locally here
+                                             //3. xaml.cs can call t
+                                             //OnPropertyChanged("sugu1");
+                                             ShapeItems.Add(sugu);
+
+                                             //// rupesh
+                                             //Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                                             //{
+                                             //    ShapeItems.Add(shapeItems[0]);
+                                             //});
 
 
                                              //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));

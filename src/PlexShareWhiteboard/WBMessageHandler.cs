@@ -25,7 +25,8 @@ using Serializer = PlexShareWhiteboard.BoardComponents.Serializer;
 
 namespace PlexShareWhiteboard
 {
-    public partial class WhiteBoardViewModel : INotificationHandler
+    //public partial class WhiteBoardViewModel : INotificationHandler
+    public partial class WhiteBoardViewModel 
     {
         public ShapeItem sugu = null;
         private Dispatcher ApplicationMainThreadDispatcher =>
@@ -73,7 +74,6 @@ namespace PlexShareWhiteboard
 
 
                                              //sugu
-
                                              //1. get element ready 
                                              // shapeItems[0]
                                              sugu = new ShapeItem

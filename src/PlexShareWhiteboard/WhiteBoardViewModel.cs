@@ -56,12 +56,12 @@ namespace PlexShareWhiteboard
         }
         private static WhiteBoardViewModel instance;
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        //public event PropertyChangedEventHandler? PropertyChanged;
 
-        public void OnPropertyChanged(string property)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-        }
+        //public void OnPropertyChanged(string property)
+        //{
+        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        //}
 
         public static WhiteBoardViewModel Instance
         {

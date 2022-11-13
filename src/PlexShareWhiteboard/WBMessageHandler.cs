@@ -57,10 +57,10 @@ namespace PlexShareWhiteboard
                             break;
                         case Operation.Creation:
 
-                            Debug.WriteLine(" shape received is it ?? " + shapeItems.Count);
-                            Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry);
-                            Debug.WriteLine(" shape received is it ?? " + shapeItems[0].GeometryString);
-                            Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Id);
+                            Debug.WriteLine(" shape received1 is it ?? " + shapeItems.Count);
+                            Debug.WriteLine(" shape received1 is it ?? " + shapeItems[0].Geometry);
+                            Debug.WriteLine(" shape received1 is it ?? " + shapeItems[0].GeometryString);
+                            Debug.WriteLine(" shape received1 is it ?? " + shapeItems[0].Id);
                             //Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry.GetType().Name);
 
                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
@@ -123,6 +123,7 @@ namespace PlexShareWhiteboard
             {
                 try
                 {
+                    Debug.WriteLine(" Client msg received");
                     var deserializedShape = serializer.DeserializeWBServerShape(serializedData);
                     List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedShape.ShapeItems);
                     switch (deserializedShape.Op)

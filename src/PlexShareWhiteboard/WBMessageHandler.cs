@@ -91,7 +91,8 @@ namespace PlexShareWhiteboard
                                              };
                                              //2. store it locally here
                                              //3. xaml.cs can call t
-                                             OnPropertyChanged("sugu1");
+                                             //OnPropertyChanged("sugu1");
+                                             ShapeItems.Add(sugu);
 
 
                                              //Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE

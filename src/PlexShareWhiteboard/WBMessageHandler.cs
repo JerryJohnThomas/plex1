@@ -24,17 +24,13 @@ namespace PlexShareWhiteboard
 {
     public partial class WhiteBoardViewModel : INotificationHandler
     {
-        private bool IsServer()
-        {
-            throw new NotImplementedException();
-        }
 
         public void OnDataReceived(string serializedData)
         {
             Serializer serializer = new Serializer();
             ServerSide serverSide = ServerSide.Instance;
             ServerCommunicator serverCommunicator = ServerCommunicator.Instance;
-            if (IsServer())
+            if (isServer)
             {
                 try
                 {
@@ -46,23 +42,30 @@ namespace PlexShareWhiteboard
                     {
                         case Operation.RestoreSnapshot:
                             serverSide.RestoreSnapshotHandler(deserializedObject);
+                            LoadBoard(shapeItems);
                             break;
                         case Operation.CreateSnapshot:
                             serverSide.CreateSnapshotHandler(deserializedObject);
+                            DisplayMessage(deserializedObject.UserID, deserializedObject.SnapshotNumber); //message that board number is saved
                             break;
                         case Operation.Creation:
+                            CreateIncomingShape(shapeItems[0]);
                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                             break;
                         case Operation.Deletion:
+                            DeleteIncomingShape(shapeItems[0]);
                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                             break;
                         case Operation.ModifyShape:
+                            ModifyIncomingShape(shapeItems[0]);
                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                             break;
                         case Operation.Clear:
+                            ClearAllShapes();
                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                             break;
                         case Operation.NewUser:
+                            LoadBoard(shapeItems);
                             serverSide.NewUserHandler(deserializedObject);
                             break;
                         default:

@@ -32,8 +32,11 @@ namespace PlexShareWhiteboard.Server
 
         // An instance of the ServerCommunicator
         private static ServerCommunicator _communicator;
-
         private static ServerSide instance;
+        private WhiteBoardViewModel _vm;
+        private Serializer _serializer;
+        private ServerSnapshotHandler _serverSnapshotHandler;
+        string userID;
 
         // To create only a single instance of ServerSide
         public static ServerSide Instance
@@ -50,14 +53,23 @@ namespace PlexShareWhiteboard.Server
             }
         }
 
-        string userID;
+        private ServerSide()
+        {
+            _serializer = new Serializer();
+            _serverSnapshotHandler = new ServerSnapshotHandler();
+            //_vm = WhiteBoardViewModel.Instance;
+        }
 
         public void SetUserId(string userId)
         {
             userID = userId;
         }
-        
 
+        //public void SetVMRef(WhiteBoardViewModel vm)
+        //{
+        //    _vm = vm;
+        //    _communicator.SetVMRef(_vm);
+        //}
         public int GetServerListSize()
         {
             return objIdToObjectMap.Count();
@@ -72,10 +84,6 @@ namespace PlexShareWhiteboard.Server
         private static int _maxZIndex = 0;
 
 
-
-        Serializer serializer = new Serializer();
-
-        ServerSnapshotHandler serverSnapshotHandler = new ServerSnapshotHandler();
 
         /// <summary>
         ///         When a ShapeItem is received from the Client/ViewModel, it updates the server side 
@@ -181,8 +189,8 @@ namespace PlexShareWhiteboard.Server
 
         public void RestoreSnapshotHandler(WBServerShape deserializedObject)
         {
-            List<ShapeItem> loadedShapes = serverSnapshotHandler.LoadBoard(deserializedObject.SnapshotNumber);
-            List<SerializableShapeItem> serializableShapeItems = serializer.ConvertToSerializableShapeItem(loadedShapes);
+            List<ShapeItem> loadedShapes = _serverSnapshotHandler.LoadBoard(deserializedObject.SnapshotNumber);
+            List<SerializableShapeItem> serializableShapeItems = _serializer.ConvertToSerializableShapeItem(loadedShapes);
             WBServerShape wBServerShape = new WBServerShape(
                 serializableShapeItems,
                 Operation.RestoreSnapshot,
@@ -193,14 +201,14 @@ namespace PlexShareWhiteboard.Server
 
         public void CreateSnapshotHandler(WBServerShape deserializedObject)
         {
-            serverSnapshotHandler.SaveBoard(objIdToObjectMap.Values.ToList());
+            _serverSnapshotHandler.SaveBoard(objIdToObjectMap.Values.ToList());
             _communicator.Broadcast(deserializedObject);
         }
 
         public void NewUserHandler(WBServerShape deserializedObject)
         {
             List<ShapeItem> shapeItems = objIdToObjectMap.Values.ToList();
-            List<SerializableShapeItem> serializableShapeItems = serializer.ConvertToSerializableShapeItem(shapeItems);
+            List<SerializableShapeItem> serializableShapeItems = _serializer.ConvertToSerializableShapeItem(shapeItems);
             WBServerShape wBServerShape = new WBServerShape(
                 serializableShapeItems,
                 Operation.NewUser,

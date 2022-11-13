@@ -32,6 +32,7 @@ namespace PlexShareWhiteboard.Client
         ClientSnapshotHandler _snapshotHandler;
 
         private static ClientSide instance;
+        private WhiteBoardViewModel _vm;
 
         // To create only a single instance of ClientSide
         public static ClientSide Instance
@@ -54,10 +55,17 @@ namespace PlexShareWhiteboard.Client
             userID = userId;
         }
 
-  
+        //public void SetVMRef(WhiteBoardViewModel vm)
+        //{
+        //    _vm = vm;
+        //    _communicator.SetVMRef(_vm);
+        //}
+
+
         private ClientSide()
         {
             _communicator = ClientCommunicator.Instance;
+            _vm = WhiteBoardViewModel.Instance;
             _serializer = new Serializer();
             NewUserHandler();
         }
@@ -76,7 +84,8 @@ namespace PlexShareWhiteboard.Client
             newShapes.Add(boardShape);
 
             var newSerializedShapes = _serializer.ConvertToSerializableShapeItem(newShapes);
-            WBServerShape wbShape = new WBServerShape(newSerializedShapes, op, boardShape.User);
+            WBServerShape wbShape = new WBServerShape(newSerializedShapes, op);
+            //WBServerShape wbShape = new WBServerShape(newSerializedShapes, op, boardShape.User);
             _communicator.SendToServer(wbShape);
 
         }

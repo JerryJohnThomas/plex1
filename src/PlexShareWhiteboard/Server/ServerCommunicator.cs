@@ -20,6 +20,7 @@ namespace PlexShareWhiteboard.Server
         private static ServerCommunicator instance;
         private static Serializer serializer;
         private static ICommunicator communicator;
+        private WhiteBoardViewModel _vm;
         private static readonly string moduleIdentifier = "Whiteboard";
 
         public static ServerCommunicator Instance
@@ -31,12 +32,18 @@ namespace PlexShareWhiteboard.Server
                     instance = new ServerCommunicator();
                     serializer = new Serializer();
                     communicator = CommunicationFactory.GetCommunicator(false);
+                    communicator.Subscribe(moduleIdentifier, WhiteBoardViewModel.Instance);
                 }
 
                 return instance;
             }
         }
 
+        //public void SetVMRef(WhiteBoardViewModel vm)
+        //{
+        //    _vm = vm;
+        //    communicator.Subscribe(moduleIdentifier, _vm);
+        //}
 
         public void Broadcast(ShapeItem newShape, Operation op)
         {

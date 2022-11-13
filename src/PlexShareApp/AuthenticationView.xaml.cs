@@ -43,7 +43,7 @@ namespace PlexShareApp
             int direction = 1;
 
             // Making animation run forever
-            while (direction>0)
+            while (true)
             {
                 if(v == 0)
                 {

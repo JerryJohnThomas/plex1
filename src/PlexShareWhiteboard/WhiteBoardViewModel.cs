@@ -20,7 +20,7 @@ namespace PlexShareWhiteboard
 {
     public partial class WhiteBoardViewModel
     {
-        public ObservableCollection<ShapeItem> ShapeItems { get; set; }
+        public AsyncObservableCollection<ShapeItem> ShapeItems { get; set; }
         public SelectObject select = new();
         List<ShapeItem> highlightShapes;
 
@@ -45,9 +45,9 @@ namespace PlexShareWhiteboard
         private WhiteBoardViewModel()
         {
             // this will become client and server 
-            Boolean isServer = true;
-            
-            ShapeItems = new ObservableCollection<ShapeItem>();
+            //isServer = true;
+
+            ShapeItems = new AsyncObservableCollection<ShapeItem>();
             highlightShapes = new List<ShapeItem>();
 
         }
@@ -82,6 +82,7 @@ namespace PlexShareWhiteboard
                 machine = ClientSide.Instance;
                 machine.SetUserId(userId);
             }
+            //machine.SetVMRef(this);
 
         }
         public void IncrementId()

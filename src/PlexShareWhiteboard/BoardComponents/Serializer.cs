@@ -23,8 +23,6 @@ namespace PlexShareWhiteboard.BoardComponents
     {
         public List<ShapeItem> ConvertToShapeItem(List<SerializableShapeItem> serializableShapeItems)
         {
-            if (serializableShapeItems == null)
-                return null;
             List<ShapeItem> shapeItems = new List<ShapeItem>(); 
             foreach (SerializableShapeItem serializableShapeItem in serializableShapeItems)
             {
@@ -35,8 +33,6 @@ namespace PlexShareWhiteboard.BoardComponents
 
         public List<SerializableShapeItem> ConvertToSerializableShapeItem(List<ShapeItem> shapeItems)
         {
-            if (shapeItems == null)
-                return null;
             List<SerializableShapeItem> serializableShapeItems = new List<SerializableShapeItem>();
             foreach (ShapeItem shapeItem in shapeItems)
             {
@@ -46,8 +42,6 @@ namespace PlexShareWhiteboard.BoardComponents
         }
         public ShapeItem ConvertToShapeItem(SerializableShapeItem x)
         {
-            if (x == null)
-                return null;
             Geometry g = null;
             if (x.GeometryString == "EllipseGeometry")
             {

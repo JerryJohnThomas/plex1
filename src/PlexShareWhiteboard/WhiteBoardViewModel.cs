@@ -1,51 +1,26 @@
-﻿using PlexShareWhiteboard.BoardComponents;
+﻿using PlexShareNetwork.Communication;
+using PlexShareNetwork.Serialization;
+using PlexShareNetwork;
+using PlexShareWhiteboard.BoardComponents;
 using PlexShareWhiteboard.Client;
 using PlexShareWhiteboard.Client.Interfaces;
 using PlexShareWhiteboard.Server;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
-//using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Threading;
-
+using System.Configuration;
 
 namespace PlexShareWhiteboard
 {
-    public partial class WhiteBoardViewModel : INotifyPropertyChanged
+    public partial class WhiteBoardViewModel
     {
-        //public AsyncObservableCollection<ShapeItem> ShapeItems { get; set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private ObservableCollection<ShapeItem> _shapeItems;
-
         public ObservableCollection<ShapeItem> ShapeItems { get; set; }
-        //public ObservableCollection<ShapeItem> ShapeItems
-        //{
-        //    get => _shapeItems;
-        //    set
-            //{
-            //    _ = ApplicationMainThreadDispatcher.BeginInvoke(
-            //            DispatcherPriority.Normal,
-            //            new Action<ObservableCollection<ShapeItem>>(newCollection =>
-            //            {
-            //                lock (this)
-            //                {
-            //                    ;
-            //                    //this._shapeItems = newCollection;
-            //                    //this.OnPropertyChanged("ShapeItems");
-            //                }
-            //            }));
-            //    ;
-            //}
-        //}
-
-        // obj.pb2.Dispatcher.Invoke(() => pb2.Value = v, System.Windows.Threading.DispatcherPriority.Background);
-        
         public SelectObject select = new();
         List<ShapeItem> highlightShapes;
 
@@ -54,7 +29,7 @@ namespace PlexShareWhiteboard
         string userId = "0";
         int currentZIndex = 0;
         string text = "";
-        Point textBoxPoint = new(100, 100);
+        Point textBoxPoint = new (100, 100);
 
         Brush fillBrush = Brushes.Azure;
         Brush strokeBrush = Brushes.Black;
@@ -65,15 +40,12 @@ namespace PlexShareWhiteboard
         int blobSize = 12;
         IShapeListener machine;
         UndoStackElement stackElement;
-        Boolean isServer = false;
+        Boolean isServer=false;
 
         private WhiteBoardViewModel()
         {
             // this will become client and server 
-            //isServer = true;
-
             ShapeItems = new ObservableCollection<ShapeItem>();
-            //ShapeItems = new AsyncObservableCollection<ShapeItem>();
             highlightShapes = new List<ShapeItem>();
 
         }
@@ -90,13 +62,6 @@ namespace PlexShareWhiteboard
                 return instance;
             }
         }
-
-
-        // dispatch stuff
-        private Dispatcher ApplicationMainThreadDispatcher =>
-                            (Application.Current?.Dispatcher != null) ?
-                                    Application.Current.Dispatcher :
-                                    Dispatcher.CurrentDispatcher;
 
         //public void SetUserId(string _userId)
         public void SetUserId(int _userId)
@@ -115,7 +80,6 @@ namespace PlexShareWhiteboard
                 machine = ClientSide.Instance;
                 machine.SetUserId(userId);
             }
-            //machine.SetVMRef(this);
 
         }
         public void IncrementId()
@@ -158,7 +122,7 @@ namespace PlexShareWhiteboard
 
                 //select.initialSelectionObject = select.selectedObject;
                 ShapeItem updateSelectShape = null;
-                foreach (ShapeItem s in ShapeItems)
+                foreach(ShapeItem s in ShapeItems)
                     if (s.Id == select.selectedObject.Id)
                         updateSelectShape = s;
 
@@ -211,11 +175,6 @@ namespace PlexShareWhiteboard
         {
             currentZIndex--;
         }
-
-        private void OnPropertyChanged(string property)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-        }
-
+        
     }
 }

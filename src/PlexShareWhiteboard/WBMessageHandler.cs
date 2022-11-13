@@ -25,53 +25,46 @@ namespace PlexShareWhiteboard
 {
     public partial class WhiteBoardViewModel : INotificationHandler
     {
+        private bool IsServer()
+        {
+            throw new NotImplementedException();
+        }
 
         public void OnDataReceived(string serializedData)
         {
             Serializer serializer = new Serializer();
-            ServerSide serverSide = ServerSide.Instance;
+            ServerSide serverSide = new ServerSide();
             ServerCommunicator serverCommunicator = ServerCommunicator.Instance;
-            if (isServer)
+            if (IsServer())
             {
                 try
                 {
                     Trace.WriteLine("ServerBoardCommunicator.onDataReceived: Receiving the XML string");
-                    
                     WBServerShape deserializedObject = serializer.DeserializeWBServerShape(serializedData);
                     List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedObject.ShapeItems);
                     var userId = deserializedObject.UserID;
-                    Trace.WriteLine("ServerBoardCommunicator.onDataReceived: Receiving the XML string" + deserializedObject.Op);
                     switch (deserializedObject.Op)
                     {
                         case Operation.RestoreSnapshot:
                             serverSide.RestoreSnapshotHandler(deserializedObject);
-                            LoadBoard(shapeItems);
                             break;
                         case Operation.CreateSnapshot:
                             serverSide.CreateSnapshotHandler(deserializedObject);
-                            DisplayMessage(deserializedObject.UserID, deserializedObject.SnapshotNumber); //message that board number is saved
                             break;
                         case Operation.Creation:
-                            {
-                                Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
-                                //CreateIncomingShape(shapeItems[0]);
-                                //serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
-                                break;
-                            }
+                            Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
+                            serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
+                            break;
                         case Operation.Deletion:
-                            DeleteIncomingShape(shapeItems[0]);
                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                             break;
                         case Operation.ModifyShape:
-                            ModifyIncomingShape(shapeItems[0]);
                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                             break;
                         case Operation.Clear:
-                            ClearAllShapes();
                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                             break;
                         case Operation.NewUser:
-                            LoadBoard(shapeItems);
                             serverSide.NewUserHandler(deserializedObject);
                             break;
                         default:
@@ -95,7 +88,9 @@ namespace PlexShareWhiteboard
                 try
                 {
                     var deserializedShape = serializer.DeserializeWBServerShape(serializedData);
-                    List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedShape.ShapeItems);
+                    List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(
+                        deserializedShape.ShapeItems
+                    );
                     switch (deserializedShape.Op)
                     {
                         case Operation.RestoreSnapshot:
@@ -105,6 +100,7 @@ namespace PlexShareWhiteboard
                             DisplayMessage(deserializedShape.UserID, deserializedShape.SnapshotNumber); //message that board number is saved
                             break;
                         case Operation.Creation:
+                            Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
                             CreateIncomingShape(shapeItems[0]);
                             break;
                         case Operation.Deletion:

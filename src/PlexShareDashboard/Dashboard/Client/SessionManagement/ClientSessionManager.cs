@@ -14,6 +14,9 @@ using PlexShare.Dashboard.Client.SessionManagement;
 using PlexShare.Dashboard;
 using PlexShareNetwork.Communication;
 using Client.Models;
+using System.Windows;
+using System.Threading;
+using PlexShareContent.Client;
 
 namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 {
@@ -32,7 +35,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
     {
         private readonly List<IClientSessionNotifications> _clients;
         private readonly ICommunicator _communicator;
-       //  private readonly IContentClient _contentClient;
+          private readonly IContentClient _contentClient;
         private readonly IDashboardSerializer _serializer;
         // private readonly IClientBoardStateManager clientBoardStateManager;
         private readonly string moduleIdentifier;
@@ -52,9 +55,13 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         {
             moduleIdentifier = "Dashboard";
             _serializer = new DashboardSerializer();
-             _communicator = CommunicationFactory.GetCommunicator();
-             _communicator.Subscribe(moduleIdentifier, this);
-          //   _contentClient = ContentClientFactory.GetInstance();
+            _communicator = CommunicationFactory.GetCommunicator();
+            _communicator.Subscribe(moduleIdentifier, this);
+            
+            
+            
+            
+               _contentClient = ContentClientFactory.GetInstance();
             //  clientBoardStateManager = ClientBoardStateManager.Instance;
             //  clientBoardStateManager.Start();
 
@@ -69,25 +76,25 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         //add constructor when testing
         public ClientSessionManager(ICommunicator communicator)
         {
-           
+
             moduleIdentifier = "Dashboard";
             _serializer = new DashboardSerializer();
             _communicator = communicator;
-            _communicator.Subscribe(moduleIdentifier, this);  
-           // _screenShareClient = ScreenShareFactory.GetScreenShareClient();
-           /*
-            if (whiteboardInstance != null)
-                clientBoardStateManager = whiteboardInstance;
-            else
-                clientBoardStateManager = ClientBoardStateManager.Instance;
-            clientBoardStateManager.Start();
-           */
+            _communicator.Subscribe(moduleIdentifier, this);
+            // _screenShareClient = ScreenShareFactory.GetScreenShareClient();
+            /*
+             if (whiteboardInstance != null)
+                 clientBoardStateManager = whiteboardInstance;
+             else
+                 clientBoardStateManager = ClientBoardStateManager.Instance;
+             clientBoardStateManager.Start();
+            */
 
             if (_clients == null) _clients = new List<IClientSessionNotifications>();
             _clientSessionData = new SessionData();
             _chatSummary = null;
 
-          //  _screenShareClient = ScreenShareFactory.GetScreenShareClient();
+            //  _screenShareClient = ScreenShareFactory.GetScreenShareClient();
         }
 
 
@@ -98,7 +105,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             if (serializedData == null)  //if recieved string is null
             {
                 throw new ArgumentNullException("Null SerializedObject as Argument");
-               // return;
+                // return;
             }
             // Deserialize the data when it arrives
             var deserializedObject = _serializer.Deserialize<ServerToClientData>(serializedData);
@@ -131,8 +138,13 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
 
                 case "endMeet":
                     _communicator.Stop();
-                   // _screenShareClient.Dispose();
-                    MeetingEnded?.Invoke();
+                    // _screenShareClient.Dispose();
+                  //  MeetingEnded?.Invoke();
+
+                        Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                        {
+                            Application.Current.Shutdown();
+                        });
                     return;
 
                 case "newID":
@@ -154,7 +166,7 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             {
                 clientToServerData = new ClientToServerData(eventName, username, userID);
                 var serializedData = _serializer.Serialize(clientToServerData);
-                _communicator.Send(serializedData, moduleIdentifier,null);
+                _communicator.Send(serializedData, moduleIdentifier, null);
             }
         }
 
@@ -230,11 +242,18 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
             // Asking the server to remove client from the server side.
             SendDataToServer("removeClient", _user.username, _user.userID);
 
+            Thread.Sleep(2000);
+
             // Stopping the network communicator.
             _communicator.Stop();
 
+            Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+            {
+                Application.Current.Shutdown();
+            });
+
             // Disposing the Screen Share Client.
-             // _screenShareClient.Dispose();  
+            // _screenShareClient.Dispose();  
 
             //Removed the client from the client side.
         }
@@ -318,8 +337,8 @@ namespace PlexShareDashboard.Dashboard.Client.SessionManagement
         //for testing we will add set session data
         public void SetSessionUsers(List<UserData> users)
         {
-           // _clientSessionData.users = users;
-            for(int i=0;i<users.Count; ++i)
+            // _clientSessionData.users = users;
+            for (int i = 0; i < users.Count; ++i)
             {
                 _clientSessionData.AddUser(users[i]);
             }

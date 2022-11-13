@@ -19,7 +19,7 @@ using System.ComponentModel;
 
 namespace PlexShareWhiteboard
 {
-    public partial class WhiteBoardViewModel : INotifyPropertyChanged
+    public partial class WhiteBoardViewModel 
     {
         //public AsyncObservableCollection<ShapeItem> ShapeItems { get; set; }
         public ObservableCollection<ShapeItem> ShapeItems { get; set; }

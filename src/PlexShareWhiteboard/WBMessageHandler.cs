@@ -63,8 +63,8 @@ namespace PlexShareWhiteboard
                             Debug.WriteLine(" shape received1 is it ?? " + shapeItems[0].Id);
                             //Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry.GetType().Name);
 
-                            //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
-                            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
+                            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
+                            //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
 
                             // sugu
                             //_ = this.ApplicationMainThreadDispatcher.BeginInvoke(
@@ -142,8 +142,8 @@ namespace PlexShareWhiteboard
                             Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Id);
                             //Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry.GetType().Name);
 
-                            //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
-                            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
+                            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
+                            //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
                             //Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
                             //CreateIncomingShape(shapeItems[0]);
 

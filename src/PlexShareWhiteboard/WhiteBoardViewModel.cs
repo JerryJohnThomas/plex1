@@ -15,10 +15,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Configuration;
+using System.ComponentModel;
 
 namespace PlexShareWhiteboard
 {
-    public partial class WhiteBoardViewModel
+    public partial class WhiteBoardViewModel : INotifyPropertyChanged
     {
         //public AsyncObservableCollection<ShapeItem> ShapeItems { get; set; }
         public ObservableCollection<ShapeItem> ShapeItems { get; set; }
@@ -54,6 +55,14 @@ namespace PlexShareWhiteboard
 
         }
         private static WhiteBoardViewModel instance;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public void OnPropertyChanged(string property)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+
         public static WhiteBoardViewModel Instance
         {
             get

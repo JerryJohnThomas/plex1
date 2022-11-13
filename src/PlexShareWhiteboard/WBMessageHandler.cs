@@ -27,6 +27,7 @@ namespace PlexShareWhiteboard
 {
     public partial class WhiteBoardViewModel : INotificationHandler
     {
+        public ShapeItem sugu = null;
         private Dispatcher ApplicationMainThreadDispatcher =>
     (Application.Current?.Dispatcher != null) ?
         Application.Current.Dispatcher :
@@ -34,183 +35,223 @@ namespace PlexShareWhiteboard
 
         public void OnDataReceived(string serializedData)
         {
-            Serializer serializer = new Serializer();
-            ServerSide serverSide = ServerSide.Instance;
-            ServerCommunicator serverCommunicator = ServerCommunicator.Instance;
-            if (isServer)
-            {
-                try
-                {
-                    WBServerShape deserializedObject = serializer.DeserializeWBServerShape(serializedData);
-                    List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedObject.ShapeItems);
-                    Trace.WriteLine("ServerBoardCommunicator.onDataReceived: Receiving the XML string "+ deserializedObject.Op);
-                    var userId = deserializedObject.UserID;
-                    switch (deserializedObject.Op)
-                    {
-                        case Operation.RestoreSnapshot:
-                            serverSide.RestoreSnapshotHandler(deserializedObject);
-                            LoadBoard(shapeItems);
-                            break;
-                        case Operation.CreateSnapshot:
-                            serverSide.CreateSnapshotHandler(deserializedObject);
-                            DisplayMessage(deserializedObject.UserID, deserializedObject.SnapshotNumber); //message that board number is saved
-                            break;
-                        case Operation.Creation:
+            _ = ApplicationMainThreadDispatcher.BeginInvoke(
+                     DispatcherPriority.Normal,
+                     new Action<string>(serializedData =>
+                     {
+                         lock (this)
+                         {
 
-                            Debug.WriteLine(" shape received1 is it ?? " + shapeItems.Count);
-                            Debug.WriteLine(" shape received1 is it ?? " + shapeItems[0].Geometry);
-                            Debug.WriteLine(" shape received1 is it ?? " + shapeItems[0].GeometryString);
-                            Debug.WriteLine(" shape received1 is it ?? " + shapeItems[0].Id);
-                            //Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry.GetType().Name);
+                             Serializer serializer = new Serializer();
+                             ServerSide serverSide = ServerSide.Instance;
+                             ServerCommunicator serverCommunicator = ServerCommunicator.Instance;
+                             if (isServer)
+                             {
+                                 try
+                                 {
+                                     WBServerShape deserializedObject = serializer.DeserializeWBServerShape(serializedData);
+                                     List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedObject.ShapeItems);
+                                     Trace.WriteLine("ServerBoardCommunicator.onDataReceived: Receiving the XML string " + deserializedObject.Op);
+                                     var userId = deserializedObject.UserID;
+                                     switch (deserializedObject.Op)
+                                     {
+                                         case Operation.RestoreSnapshot:
+                                             serverSide.RestoreSnapshotHandler(deserializedObject);
+                                             LoadBoard(shapeItems);
+                                             break;
+                                         case Operation.CreateSnapshot:
+                                             serverSide.CreateSnapshotHandler(deserializedObject);
+                                             DisplayMessage(deserializedObject.UserID, deserializedObject.SnapshotNumber); //message that board number is saved
+                                             break;
+                                         case Operation.Creation:
 
-                            Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
-                            {
-                                ShapeItems.Add(shapeItems[0]);
-                            });
-
-
-                            //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
-                            //    new Action<List<ShapeItem>>((shapeItem) =>
-                            //        ShapeItems.Add(shapeItem[0])),
-                            //    shapeItems
-                            //    );
-
-                            //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
-                            //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
-
-                            // sugu
-                            //_ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                            //      DispatcherPriority.Normal,
-                            //      new Action<ObservableCollection<ShapeItem>>((ServerUpdate) =>
-                            //      {
-                            //          lock (this)
-                            //          {
-
-                            //              //processServerUpdateBatch(ServerUpdate);
-
-                            //              ShapeItems.Add(ServerUpdate[0]);
-                            //          }
-                            //      }
-
-                            //  ),
-                            //  shapeItems);
-
-                            //Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
-                            //CreateIncomingShape(shapeItems[0]);
-                            //serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
-                            break;
-                        case Operation.Deletion:
-                            DeleteIncomingShape(shapeItems[0]);
-                            serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
-                            break;
-                        case Operation.ModifyShape:
-                            ModifyIncomingShape(shapeItems[0]);
-                            serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
-                            break;
-                        case Operation.Clear:
-                            ClearAllShapes();
-                            serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
-                            break;
-                        case Operation.NewUser:
-                            LoadBoard(shapeItems);
-                            serverSide.NewUserHandler(deserializedObject);
-                            break;
-                        default:
-                            Console.WriteLine("Unidentified Operation at ServerBoardCommunicator");
-                            break;
-                    }
-                    
-
-                    Trace.WriteLine(
-                        "WBMessageHandler.OnDataReceived: Took necessary actions on received object"
-                    );
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine("ServerBoardCommunicator.onDataReceived: Exception Occured");
-                    Trace.WriteLine(e.Message);
-                }
-            }
-            else
-            {
-                try
-                {
-                    Debug.WriteLine(" Client msg received");
-                    var deserializedShape = serializer.DeserializeWBServerShape(serializedData);
-                    List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedShape.ShapeItems);
-                    switch (deserializedShape.Op)
-                    {
-                        case Operation.RestoreSnapshot:
-                            LoadBoard(shapeItems);
-                            break;
-                        case Operation.CreateSnapshot:
-                            DisplayMessage(deserializedShape.UserID, deserializedShape.SnapshotNumber); //message that board number is saved
-                            break;
-                        case Operation.Creation:
-
-                            Debug.WriteLine(" shape received is it ?? " + shapeItems.Count);
-                            Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry);
-                            Debug.WriteLine(" shape received is it ?? " + shapeItems[0].GeometryString);
-                            Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Id);
-                            //Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry.GetType().Name);
-
-                            // rupesh
-                            Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
-                            {
-                                ShapeItems.Add(shapeItems[0]);
-                            });
+                                             Debug.WriteLine(" shape received1 is it ?? " + shapeItems.Count);
+                                             Debug.WriteLine(" shape received1 is it ?? " + shapeItems[0].Geometry);
+                                             Debug.WriteLine(" shape received1 is it ?? " + shapeItems[0].GeometryString);
+                                             Debug.WriteLine(" shape received1 is it ?? " + shapeItems[0].Id);
+                                             //Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry.GetType().Name);
 
 
-                            //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
-                            //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, 
-                            //    new Action<List<ShapeItem>>((shapeItem) =>
-                            //        ShapeItems.Add(shapeItem[0])),
-                            //    shapeItems
-                            //    );
-                            //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
-                            //Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
-                            //CreateIncomingShape(shapeItems[0]);
+                                             //sugu
+
+                                             //1. get element ready 
+                                             // shapeItems[0]
+                                             sugu = new ShapeItem
+                                             {
+                                                 Geometry = shapeItems[0].Geometry.Clone(),
+                                                 GeometryString = shapeItems[0].GeometryString,
+                                                 Start = shapeItems[0].Start,
+                                                 End = shapeItems[0].End,
+                                                 Fill = shapeItems[0].Fill,
+                                                 Stroke = shapeItems[0].Stroke,
+                                                 ZIndex = shapeItems[0].ZIndex,
+                                                 AnchorPoint = shapeItems[0].AnchorPoint,
+                                                 Id = shapeItems[0].Id,
+                                                 StrokeThickness = shapeItems[0].StrokeThickness,
+                                             };
+                                             //2. store it locally here
+                                             //3. xaml.cs can call t
+                                             OnPropertyChanged("sugu1");
 
 
-                            // sugu
-                            //_ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                            //      DispatcherPriority.Normal,
-                            //      new Action<ObservableCollection<ShapeItem>>((ServerUpdate) =>
-                            //      {
-                            //          lock (this)
-                            //          {
+                                             //Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                                             //{
+                                             //    ShapeItems.Add(shapeItems[0]);
+                                             //});
 
-                            //              //processServerUpdateBatch(ServerUpdate);
-                            //               // added  
-                            //              ShapeItems.Add(ServerUpdate[0]);
-                            //          }
-                            //      }
 
-                            //  ),
-                            //  shapeItems);
+                                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                                             //    new Action<List<ShapeItem>>((shapeItem) =>
+                                             //        ShapeItems.Add(shapeItem[0])),
+                                             //    shapeItems
+                                             //    );
 
-                            break;
-                        case Operation.Deletion:
-                            DeleteIncomingShape(shapeItems[0]);
-                            break;
-                        case Operation.ModifyShape:
-                            ModifyIncomingShape(shapeItems[0]);
-                            break;
-                        case Operation.Clear:
-                            ClearAllShapes();
-                            break;
-                        case Operation.NewUser:
-                            LoadBoard(shapeItems);
-                            break;
-                    }
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine("[Whiteboard] OnDataReceived: Exception Occured");
-                    Trace.WriteLine(e.Message);
-                }
-            }
+                                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
+                                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
+
+                                             // sugu
+                                             //_ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                                             //      DispatcherPriority.Normal,
+                                             //      new Action<ObservableCollection<ShapeItem>>((ServerUpdate) =>
+                                             //      {
+                                             //          lock (this)
+                                             //          {
+
+                                             //              //processServerUpdateBatch(ServerUpdate);
+
+                                             //              ShapeItems.Add(ServerUpdate[0]);
+                                             //          }
+                                             //      }
+
+                                             //  ),
+                                             //  shapeItems);
+
+                                             //Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
+                                             //CreateIncomingShape(shapeItems[0]);
+                                             //serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
+                                             break;
+                                         case Operation.Deletion:
+                                             DeleteIncomingShape(shapeItems[0]);
+                                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
+                                             break;
+                                         case Operation.ModifyShape:
+                                             ModifyIncomingShape(shapeItems[0]);
+                                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
+                                             break;
+                                         case Operation.Clear:
+                                             ClearAllShapes();
+                                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
+                                             break;
+                                         case Operation.NewUser:
+                                             LoadBoard(shapeItems);
+                                             serverSide.NewUserHandler(deserializedObject);
+                                             break;
+                                         default:
+                                             Console.WriteLine("Unidentified Operation at ServerBoardCommunicator");
+                                             break;
+                                     }
+
+
+                                     Trace.WriteLine(
+                                         "WBMessageHandler.OnDataReceived: Took necessary actions on received object"
+                                     );
+                                 }
+                                 catch (Exception e)
+                                 {
+                                     Trace.WriteLine("ServerBoardCommunicator.onDataReceived: Exception Occured");
+                                     Trace.WriteLine(e.Message);
+                                 }
+                             }
+                             else
+                             {
+                                 try
+                                 {
+                                     Debug.WriteLine(" Client msg received");
+                                     var deserializedShape = serializer.DeserializeWBServerShape(serializedData);
+                                     List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedShape.ShapeItems);
+                                     switch (deserializedShape.Op)
+                                     {
+                                         case Operation.RestoreSnapshot:
+                                             LoadBoard(shapeItems);
+                                             break;
+                                         case Operation.CreateSnapshot:
+                                             DisplayMessage(deserializedShape.UserID, deserializedShape.SnapshotNumber); //message that board number is saved
+                                             break;
+                                         case Operation.Creation:
+
+                                             Debug.WriteLine(" shape received is it ?? " + shapeItems.Count);
+                                             Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry);
+                                             Debug.WriteLine(" shape received is it ?? " + shapeItems[0].GeometryString);
+                                             Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Id);
+                                             //Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry.GetType().Name);
+
+
+                                             //sugu
+
+
+
+                                             // rupesh
+                                             Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                                             {
+                                                 ShapeItems.Add(shapeItems[0]);
+                                             });
+
+
+                                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
+                                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, 
+                                             //    new Action<List<ShapeItem>>((shapeItem) =>
+                                             //        ShapeItems.Add(shapeItem[0])),
+                                             //    shapeItems
+                                             //    );
+                                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
+                                             //Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
+                                             //CreateIncomingShape(shapeItems[0]);
+
+
+                                             // sugu
+                                             //_ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                                             //      DispatcherPriority.Normal,
+                                             //      new Action<ObservableCollection<ShapeItem>>((ServerUpdate) =>
+                                             //      {
+                                             //          lock (this)
+                                             //          {
+
+                                             //              //processServerUpdateBatch(ServerUpdate);
+                                             //               // added  
+                                             //              ShapeItems.Add(ServerUpdate[0]);
+                                             //          }
+                                             //      }
+
+                                             //  ),
+                                             //  shapeItems);
+
+                                             break;
+                                         case Operation.Deletion:
+                                             DeleteIncomingShape(shapeItems[0]);
+                                             break;
+                                         case Operation.ModifyShape:
+                                             ModifyIncomingShape(shapeItems[0]);
+                                             break;
+                                         case Operation.Clear:
+                                             ClearAllShapes();
+                                             break;
+                                         case Operation.NewUser:
+                                             LoadBoard(shapeItems);
+                                             break;
+                                     }
+                                 }
+                                 catch (Exception e)
+                                 {
+                                     Trace.WriteLine("[Whiteboard] OnDataReceived: Exception Occured");
+                                     Trace.WriteLine(e.Message);
+                                 }
+                             }
+                         }
+                     })
+                     ,
+                     serializedData);
         }
+        
 
         private void DisplayMessage(string userID, int snapshotNumber)
         {

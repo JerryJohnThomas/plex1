@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Markup;
 using PlexShareNetwork;
 using PlexShareNetwork.Communication;
@@ -49,8 +50,9 @@ namespace PlexShareWhiteboard
                             DisplayMessage(deserializedObject.UserID, deserializedObject.SnapshotNumber); //message that board number is saved
                             break;
                         case Operation.Creation:
-                            CreateIncomingShape(shapeItems[0]);
-                            serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
+                            Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
+                            //CreateIncomingShape(shapeItems[0]);
+                            //serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                             break;
                         case Operation.Deletion:
                             DeleteIncomingShape(shapeItems[0]);
@@ -99,7 +101,8 @@ namespace PlexShareWhiteboard
                             DisplayMessage(deserializedShape.UserID, deserializedShape.SnapshotNumber); //message that board number is saved
                             break;
                         case Operation.Creation:
-                            CreateIncomingShape(shapeItems[0]);
+                            Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
+                            //CreateIncomingShape(shapeItems[0]);
                             break;
                         case Operation.Deletion:
                             DeleteIncomingShape(shapeItems[0]);
@@ -130,11 +133,12 @@ namespace PlexShareWhiteboard
 
         private void LoadBoard(List<ShapeItem> shapeItems)
         {
-            ClearAllShapes();
-            foreach (ShapeItem shapeItem in shapeItems)
-            {
-                CreateIncomingShape(shapeItem);
-            }
+            //ClearAllShapes();
+            //foreach (ShapeItem shapeItem in shapeItems)
+            //{
+            //    CreateIncomingShape(shapeItem);
+            //}
+            ;
         }
     }
 }

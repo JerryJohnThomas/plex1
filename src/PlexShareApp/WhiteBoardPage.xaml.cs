@@ -31,7 +31,8 @@ namespace PlexShareApp
             InitializeComponent();
             //viewModel = new WhiteBoardViewModel();
             viewModel = WhiteBoardViewModel.Instance;
-            viewModel.ShapeItems = new AsyncObservableCollection<ShapeItem>();
+            //viewModel.ShapeItems = new AsyncObservableCollection<ShapeItem>();
+            viewModel.ShapeItems = new ObservableCollection<ShapeItem>();
             this.DataContext = viewModel;
             this.currentTool = "Select";
         }

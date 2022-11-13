@@ -148,21 +148,21 @@ namespace PlexShareWhiteboard
 
 
                             // sugu
-                            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                                  DispatcherPriority.Normal,
-                                  new Action<ObservableCollection<ShapeItem>>((ServerUpdate) =>
-                                  {
-                                      lock (this)
-                                      {
+                            //_ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                            //      DispatcherPriority.Normal,
+                            //      new Action<ObservableCollection<ShapeItem>>((ServerUpdate) =>
+                            //      {
+                            //          lock (this)
+                            //          {
 
-                                          //processServerUpdateBatch(ServerUpdate);
+                            //              //processServerUpdateBatch(ServerUpdate);
+                            //               // added  
+                            //              ShapeItems.Add(ServerUpdate[0]);
+                            //          }
+                            //      }
 
-                                          ShapeItems.Add(ServerUpdate[0]);
-                                      }
-                                  }
-
-                              ),
-                              shapeItems);
+                            //  ),
+                            //  shapeItems);
 
                             break;
                         case Operation.Deletion:

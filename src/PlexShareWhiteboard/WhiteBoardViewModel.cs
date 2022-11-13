@@ -46,7 +46,7 @@ namespace PlexShareWhiteboard
         private WhiteBoardViewModel()
         {
             // this will become client and server 
-            //isServer = true;
+            isServer = true;
 
             //ShapeItems = new AsyncObservableCollection<ShapeItem>();
             ShapeItems = new ObservableCollection<ShapeItem>();

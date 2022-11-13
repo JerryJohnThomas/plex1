@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Mail;
@@ -14,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Markup;
+using System.Windows.Threading;
 using PlexShareNetwork;
 using PlexShareNetwork.Communication;
 using PlexShareNetwork.Serialization;
@@ -25,6 +27,10 @@ namespace PlexShareWhiteboard
 {
     public partial class WhiteBoardViewModel : INotificationHandler
     {
+        private Dispatcher ApplicationMainThreadDispatcher =>
+    (Application.Current?.Dispatcher != null) ?
+        Application.Current.Dispatcher :
+        Dispatcher.CurrentDispatcher;
 
         public void OnDataReceived(string serializedData)
         {
@@ -35,9 +41,9 @@ namespace PlexShareWhiteboard
             {
                 try
                 {
-                    Trace.WriteLine("ServerBoardCommunicator.onDataReceived: Receiving the XML string");
                     WBServerShape deserializedObject = serializer.DeserializeWBServerShape(serializedData);
                     List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedObject.ShapeItems);
+                    Trace.WriteLine("ServerBoardCommunicator.onDataReceived: Receiving the XML string "+ deserializedObject.Op);
                     var userId = deserializedObject.UserID;
                     switch (deserializedObject.Op)
                     {
@@ -50,7 +56,21 @@ namespace PlexShareWhiteboard
                             DisplayMessage(deserializedObject.UserID, deserializedObject.SnapshotNumber); //message that board number is saved
                             break;
                         case Operation.Creation:
-                            Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
+                                                        _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                                  DispatcherPriority.Normal,
+                                  new Action<ObservableCollection<ShapeItem>>((ServerUpdate) =>
+                                  {
+                                      lock (this) 
+                                          {
+                                          //processServerUpdateBatch(ServerUpdate);
+                                          ShapeItems.Add(ServerUpdate[0]);
+                                      }
+                                  }
+
+                              ),
+                              shapeItems);
+
+                            //Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
                             //CreateIncomingShape(shapeItems[0]);
                             //serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                             break;

@@ -56,19 +56,24 @@ namespace PlexShareWhiteboard
                             DisplayMessage(deserializedObject.UserID, deserializedObject.SnapshotNumber); //message that board number is saved
                             break;
                         case Operation.Creation:
-                                                        _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                                  DispatcherPriority.Normal,
-                                  new Action<ObservableCollection<ShapeItem>>((ServerUpdate) =>
-                                  {
-                                      lock (this) 
-                                          {
-                                          //processServerUpdateBatch(ServerUpdate);
-                                          ShapeItems.Add(ServerUpdate[0]);
-                                      }
-                                  }
 
-                              ),
-                              shapeItems);
+                            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear());
+
+                            //_ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                            //      DispatcherPriority.Normal,
+                            //      new Action<ObservableCollection<ShapeItem>>((ServerUpdate) =>
+                            //      {
+                            //          lock (this) 
+                            //              {
+                                    
+                            //              //processServerUpdateBatch(ServerUpdate);
+
+                            //              ShapeItems.Add(ServerUpdate[0]);
+                            //          }
+                            //      }
+
+                            //  ),
+                            //  shapeItems);
 
                             //Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
                             //CreateIncomingShape(shapeItems[0]);

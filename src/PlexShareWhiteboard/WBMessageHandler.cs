@@ -57,7 +57,8 @@ namespace PlexShareWhiteboard
                             break;
                         case Operation.Creation:
 
-                            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
+                            //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
+                            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
 
                             //_ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                             //      DispatcherPriority.Normal,
@@ -65,7 +66,7 @@ namespace PlexShareWhiteboard
                             //      {
                             //          lock (this) 
                             //              {
-                                    
+
                             //              //processServerUpdateBatch(ServerUpdate);
 
                             //              ShapeItems.Add(ServerUpdate[0]);
@@ -126,7 +127,8 @@ namespace PlexShareWhiteboard
                             DisplayMessage(deserializedShape.UserID, deserializedShape.SnapshotNumber); //message that board number is saved
                             break;
                         case Operation.Creation:
-                            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
+                            //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
+                            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
                             //Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
                             //CreateIncomingShape(shapeItems[0]);
                             break;

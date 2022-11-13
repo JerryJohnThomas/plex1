@@ -60,27 +60,28 @@ namespace PlexShareWhiteboard
                             Debug.WriteLine(" shape received is it ?? " + shapeItems.Count);
                             Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry);
                             Debug.WriteLine(" shape received is it ?? " + shapeItems[0].GeometryString);
-                            Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry.GetType().Name);
+                            Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Id);
+                            //Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry.GetType().Name);
 
                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
-                            //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
+                            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
 
                             // sugu
-                            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                                  DispatcherPriority.Normal,
-                                  new Action<ObservableCollection<ShapeItem>>((ServerUpdate) =>
-                                  {
-                                      lock (this)
-                                      {
+                            //_ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                            //      DispatcherPriority.Normal,
+                            //      new Action<ObservableCollection<ShapeItem>>((ServerUpdate) =>
+                            //      {
+                            //          lock (this)
+                            //          {
 
-                                          //processServerUpdateBatch(ServerUpdate);
+                            //              //processServerUpdateBatch(ServerUpdate);
 
-                                          ShapeItems.Add(ServerUpdate[0]);
-                                      }
-                                  }
+                            //              ShapeItems.Add(ServerUpdate[0]);
+                            //          }
+                            //      }
 
-                              ),
-                              shapeItems);
+                            //  ),
+                            //  shapeItems);
 
                             //Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
                             //CreateIncomingShape(shapeItems[0]);
@@ -137,10 +138,11 @@ namespace PlexShareWhiteboard
                             Debug.WriteLine(" shape received is it ?? " + shapeItems.Count);
                             Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry);
                             Debug.WriteLine(" shape received is it ?? " + shapeItems[0].GeometryString);
-                            Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry.GetType().Name);
+                            Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Id);
+                            //Debug.WriteLine(" shape received is it ?? " + shapeItems[0].Geometry.GetType().Name);
 
                             //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Clear()));
-                            //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
+                            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => ShapeItems.Add(shapeItems[0])));
                             //Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
                             //CreateIncomingShape(shapeItems[0]);
 

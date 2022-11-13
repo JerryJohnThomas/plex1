@@ -18,6 +18,7 @@ using PlexShareWhiteboard.Client.Interfaces;
 using PlexShareWhiteboard.Server.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -138,6 +139,8 @@ namespace PlexShareWhiteboard.Server
 
             newShape.ZIndex = Math.Max(_maxZIndex, newShape.ZIndex);
             objIdToObjectMap.Add(objectId, newShape);
+            Debug.WriteLine("inside AddObjectToServerList" + newShape.Id);
+            Debug.WriteLine("inside AddObjectToServerList" + newShape.Geometry.GetType().Name);
             BroadcastToClients(newShape, op);
             _maxZIndex++;
         }

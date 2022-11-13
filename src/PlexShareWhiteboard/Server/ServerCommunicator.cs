@@ -47,6 +47,8 @@ namespace PlexShareWhiteboard.Server
 
         public void Broadcast(ShapeItem newShape, Operation op)
         {
+            Debug.WriteLine("Inisde ServerCommunicator.cs broadcast, " + newShape.Id);
+            Debug.WriteLine("Inisde ServerCommunicator.cs broadcast, " + newShape.Geometry.GetType().Name);
             List<ShapeItem> newShapeList = new List<ShapeItem>();
             newShapeList.Add(newShape);
             Broadcast(newShapeList, op);

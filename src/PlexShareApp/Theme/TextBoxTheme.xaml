@@ -23,7 +23,7 @@
                                      Padding="5"
                                      TextWrapping="Wrap"
                                      Foreground="#CFCFCF"
-                                     x:Name="SendTextBox"
+                                     x:Name="ChatBox"
                                      AcceptsReturn="True"/>
 
                             <TextBlock IsHitTestVisible="False"
@@ -40,7 +40,7 @@
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Style.Triggers>
                                             <!--When the Text property of SearchBox is "" or empty, the textblock is visible-->
-                                            <DataTrigger Binding="{Binding Text, ElementName=SendTextBox}"
+                                            <DataTrigger Binding="{Binding Text, ElementName=ChatBox}"
                                                              Value="">
                                                 <Setter Property="Visibility" Value="Visible"/>
                                             </DataTrigger>

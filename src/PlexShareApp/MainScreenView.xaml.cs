@@ -32,52 +32,42 @@ namespace PlexShareApp
         private static DashboardPage dashboardPage;
         private static WhiteBoardPage whiteBoardPage;
         private static ChatPageView chatPage;
-        private static ScreenshareServerView screenshareServerView;
-        private static ScreenshareClientView screenshareClientView;
+        private static ScreenSharePage screenSharePage;
         public event PropertyChangingEventHandler? PropertyChanged;
-        private bool isServer;
         
         public MainScreenView(string name, string email, string picPath, string url, string ip, string port)
         {
-            bool verified = false;
+            bool verified = true;
+
             IUXServerSessionManager serverSessionManager = SessionManagerFactory.GetServerSessionManager();
-            IUXClientSessionManager clientSessionManager = SessionManagerFactory.GetClientSessionManager();
+            IUXClientSessionManager clientSessionManafer = SessionManagerFactory.GetClientSessionManager();
 
             if (ip == "-1")
             {
                 MeetingCredentials meetingCredentials = serverSessionManager.GetPortsAndIPAddress();
-                verified = clientSessionManager.AddClient(meetingCredentials.ipAddress, meetingCredentials.port, name);
+                verified = clientSessionManafer.AddClient(meetingCredentials.ipAddress, meetingCredentials.port, name);
                 ip = meetingCredentials.ipAddress;
                 port = meetingCredentials.port.ToString();
-                isServer = true;
             }
             else
             {
-                verified = clientSessionManager.AddClient(ip, int.Parse(port), name);
-                isServer = false;
+                verified = clientSessionManafer.AddClient(ip, int.Parse(port), name);
             }
 
             if (verified)
             {
+
                 InitializeComponent();
                 dashboardPage = new DashboardPage();
+                whiteBoardPage = new WhiteBoardPage();
                 chatPage = new ChatPageView();
-                if (isServer)
-                {
-                    whiteBoardPage = new WhiteBoardPage(0);
-                }
-                else
-                {
-                    whiteBoardPage = new WhiteBoardPage(1);
-                }
-                screenshareServerView = new ScreenshareServerView();
-                screenshareClientView = new ScreenshareClientView();
-
+                screenSharePage = new ScreenSharePage();
                 Main.Content = dashboardPage;
                 ServerIPandPort.Text = "Server IP : " + ip + " Port : " + port;
                 // ClientIPandPort.Text = "Client IP : " + meetingCredentials.ipAddress  + " Port : " + meetingCredentials.port;
 
             }
+
         }
 
         /// <summary>
@@ -115,15 +105,7 @@ namespace PlexShareApp
             //Screenshare.Foreground = Brushes.Black;
 
             System.Console.WriteLine("ScreenShareUX");
-
-            if(isServer == true)
-            {
-                Main.Content = screenshareClientView;
-            }
-            else
-            {
-                Main.Content = screenshareServerView;
-            }
+            Main.Content = screenSharePage;
         }
 
         /// <summary>
@@ -135,6 +117,9 @@ namespace PlexShareApp
             Whiteboard.Background = Brushes.DarkCyan;
             Screenshare.Background = Brushes.DarkSlateGray;
 
+            //Dashboard.Foreground = Brushes.SeaShell;
+            //Whiteboard.Foreground = Brushes.Black;
+            //Screenshare.Foreground = Brushes.SeaShell;
 
             System.Console.WriteLine("Whiteboard UX");
             Main.Content = whiteBoardPage;
@@ -148,11 +133,15 @@ namespace PlexShareApp
             if (chatOn == false)
             {
                 chatOn = true;
+                //ChatWindow.Background = Brushes.PeachPuff;
+                //ChatIcon.Foreground = Brushes.Black;
                 ScreenWithChat.Content = chatPage;
             }
             else
             {
                 chatOn=false;
+                //ChatWindow.Background = Brushes.DarkSlateGray;
+                //ChatIcon.Foreground = Brushes.White;
                 ScreenWithChat.Content = null;
             }
         }

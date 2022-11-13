@@ -12,7 +12,6 @@ using System.Linq;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Markup;
 using PlexShareNetwork;
 using PlexShareNetwork.Communication;
@@ -33,7 +32,7 @@ namespace PlexShareWhiteboard
         public void OnDataReceived(string serializedData)
         {
             Serializer serializer = new Serializer();
-            ServerSide serverSide = new ServerSide();
+            ServerSide serverSide = ServerSide.Instance;
             ServerCommunicator serverCommunicator = ServerCommunicator.Instance;
             if (IsServer())
             {
@@ -52,7 +51,6 @@ namespace PlexShareWhiteboard
                             serverSide.CreateSnapshotHandler(deserializedObject);
                             break;
                         case Operation.Creation:
-                            Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
                             serverSide.OnShapeReceived(shapeItems[0], deserializedObject.Op);
                             break;
                         case Operation.Deletion:
@@ -88,9 +86,7 @@ namespace PlexShareWhiteboard
                 try
                 {
                     var deserializedShape = serializer.DeserializeWBServerShape(serializedData);
-                    List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(
-                        deserializedShape.ShapeItems
-                    );
+                    List<ShapeItem> shapeItems = serializer.ConvertToShapeItem(deserializedShape.ShapeItems);
                     switch (deserializedShape.Op)
                     {
                         case Operation.RestoreSnapshot:
@@ -100,7 +96,6 @@ namespace PlexShareWhiteboard
                             DisplayMessage(deserializedShape.UserID, deserializedShape.SnapshotNumber); //message that board number is saved
                             break;
                         case Operation.Creation:
-                            Application.Current.Dispatcher.BeginInvoke(new Action(() => this.ShapeItems.Add(shapeItems[0])));
                             CreateIncomingShape(shapeItems[0]);
                             break;
                         case Operation.Deletion:

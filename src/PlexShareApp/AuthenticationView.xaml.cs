@@ -26,11 +26,11 @@ namespace PlexShareApp
         public AuthenticationView()
         {
             InitializeComponent();
-            AuthenticationViewModel viewModel = new();
+            AuthenticationViewModel viewModel = new AuthenticationViewModel();
             this.DataContext = viewModel;
             this.Show();
 
-            // Animate_Auth_Screen(this);
+            Animate_Auth_Screen(this);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace PlexShareApp
             int direction = 1;
 
             // Making animation run forever
-            while (true)
+            while (direction>0)
             {
                 if(v == 0)
                 {
@@ -142,9 +142,8 @@ namespace PlexShareApp
             if (returnVal[0] == "true")
             {
                 var homePage = new HomePageView(returnVal[1], returnVal[2], returnVal[3]);
-
                 homePage.Show();
-                this.Close(); 
+                Close(); 
             }        
         }
     }
